@@ -15,10 +15,11 @@ gamer-network/
 │   ├── api/            NestJS + PostgreSQL. The only thing that talks to the DB.
 │   ├── mobile/         Flutter app, Android first. The product.
 │   └── web/            Next.js: public listing share pages.
+├── render.yaml         Production on Render (ADR-0008).
 ├── packages/
 │   └── api-spec/       openapi.json generated from apps/api. The contract
 │                       between the API and both clients.
-├── infra/              Docker Compose for local dev and the production VPS.
+├── infra/              Docker Compose for local dev and the production images.
 ├── docs/               PRD, decisions (ADRs), validation test.
 └── .claude/skills/     How we work, for anyone (or any session) picking it up.
 ```
@@ -41,7 +42,7 @@ calls:
 1. [ADR-0001](docs/decisions/0001-mvp-is-find-players-only.md) MVP is Find Players, not a social feed.
 2. [ADR-0002](docs/decisions/0002-flutter-android-first.md) Flutter app, Android first. Web is only for share pages and admin.
 3. [ADR-0003](docs/decisions/0003-nestjs-postgres-api.md) NestJS + Postgres, with the OpenAPI spec as the contract.
-4. [ADR-0004](docs/decisions/0004-paid-vps-hosting.md) A paid VPS from day one, so the app never "doesn't open".
+4. [ADR-0004](docs/decisions/0004-paid-vps-hosting.md) A paid host from day one, so the app never "doesn't open"; [ADR-0008](docs/decisions/0008-render-hosting.md) makes that Render.
 5. [ADR-0005](docs/decisions/0005-safety-defaults.md) 16+, block and report, gaming IDs private by default.
 6. [ADR-0006](docs/decisions/0006-drizzle-orm.md) Drizzle for the database, migrations reviewed as SQL.
 7. [ADR-0007](docs/decisions/0007-email-password-and-google.md) Sign in with email + password or Google.
@@ -55,7 +56,7 @@ calls:
 | [docs/DATA_MODEL.md](docs/DATA_MODEL.md)           | Every table, enum and rule                              |
 | [docs/API.md](docs/API.md)                         | Endpoints, conventions and how to wire the app          |
 | [docs/validation-test.md](docs/validation-test.md) | The manual Telegram test                                |
-| [docs/DEPLOY.md](docs/DEPLOY.md)                   | The production server: setup, updates, backups          |
+| [docs/DEPLOY.md](docs/DEPLOY.md)                   | Production on Render: setup, updates, backups           |
 
 ## Getting started
 

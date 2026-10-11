@@ -33,11 +33,11 @@ client yet. That is the biggest gap before the beta.
 | `GOOGLE_CLIENT_IDS`           | Google sign-in                             | only email + password     |
 | `RESEND_API_KEY`, `MAIL_FROM` | verify / reset emails                      | codes printed to console  |
 | `FIREBASE_SERVICE_ACCOUNT`    | push                                       | pushes printed to console |
-| VPS, domain, R2 bucket        | deploy, share links, avatars in production | local only                |
+| Render account, R2 bucket     | deploy, share links, avatars in production | local only                |
 
 **Open decisions:**
 
-- PWA: proposed ADR-0008, a Flutter web build instead of a separate
+- PWA: proposed ADR-0009, a Flutter web build instead of a separate
   Next.js PWA. Not written yet.
 - Branch protection on `main` and `dev` (phase 0). Until then PRs are
   merged by their author once CI is green.

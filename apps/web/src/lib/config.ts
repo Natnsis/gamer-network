@@ -1,7 +1,9 @@
 // Read on the server at request time, so one build runs anywhere.
 export const config = {
+  // Render's private network gives "host:port" with no scheme.
   get apiUrl() {
-    return (process.env.API_URL ?? 'http://localhost:3300').replace(/\/+$/, '');
+    const url = (process.env.API_URL ?? 'http://localhost:3300').replace(/\/+$/, '');
+    return /^https?:\/\//.test(url) ? url : `http://${url}`;
   },
   get siteUrl() {
     return (process.env.PUBLIC_WEB_URL ?? 'http://localhost:3000').replace(/\/+$/, '');
