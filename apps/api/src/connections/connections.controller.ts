@@ -108,6 +108,7 @@ export class ConnectionsController {
     return this.connections.mine(user, q.limit, q.cursor);
   }
 
+  /** Remove a connection, for both players. */
   @Delete('connections/:userId')
   @HttpCode(204)
   @ApiNoContentResponse()

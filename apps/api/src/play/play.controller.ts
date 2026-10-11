@@ -62,6 +62,7 @@ export class PlayInvitesController {
     return this.play.accept(user, id);
   }
 
+  /** Turn down a play invite. */
   @Post(':id/decline')
   @HttpCode(204)
   @ApiNoContentResponse()

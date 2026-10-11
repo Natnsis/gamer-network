@@ -9,6 +9,10 @@ endpoints are built.
 - **`packages/api-spec/openapi.json`** is the exact contract once an
   endpoint exists. Where the two disagree, the spec wins and this file
   gets fixed in the same PR.
+  The running API serves the same file at `GET /openapi.json` (every
+  environment, no sign-in); the browsable docs at `/docs` are local only.
+  Every operation has a summary and a `default` response that is an
+  `ErrorResponse`.
 - Tables behind each endpoint: [DATA_MODEL.md](DATA_MODEL.md).
 
 ## Conventions
