@@ -60,6 +60,7 @@ export class AdminController {
     return this.admin.resolve(admin, id, body.action, body.note);
   }
 
+  /** Search and page through players. */
   @Get('users')
   @ApiOkResponse({ type: AdminUserPageDto })
   users(@Query() q: AdminUsersQuery): Promise<AdminUserPageDto> {
@@ -85,6 +86,7 @@ export class AdminController {
     return this.admin.ban(admin, id, body.reason);
   }
 
+  /** Lift a ban. */
   @Post('users/:id/unban')
   @HttpCode(200)
   @ApiOkResponse({ type: AdminUserDto })
@@ -96,6 +98,7 @@ export class AdminController {
     return this.admin.unban(admin, id, body.note);
   }
 
+  /** Take a listing down. */
   @Post('listings/:id/remove')
   @HttpCode(204)
   @ApiNoContentResponse()

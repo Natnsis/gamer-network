@@ -69,12 +69,14 @@ export class MeController {
     return this.profiles.setGames(user, body);
   }
 
+  /** Replace the platforms the player plays on. */
   @Put('platforms')
   @ApiOkResponse({ type: MeDto })
   setPlatforms(@CurrentUser() user: User, @Body() body: SetPlatformsBody): Promise<MeDto> {
     return this.profiles.setPlatforms(user, body);
   }
 
+  /** Replace the player's play-style tags. */
   @Put('tags')
   @ApiOkResponse({ type: MeDto })
   setTags(@CurrentUser() user: User, @Body() body: SetTagsBody): Promise<MeDto> {
@@ -113,6 +115,7 @@ export class MeController {
     return this.profiles.setAvatar(user, body);
   }
 
+  /** Remove the profile picture. */
   @Delete('avatar')
   @ApiOkResponse({ type: MeDto })
   removeAvatar(@CurrentUser() user: User): Promise<MeDto> {

@@ -41,6 +41,7 @@ export class SafetyController {
     return this.safety.block(user, body.userId);
   }
 
+  /** Unblock a player. */
   @Delete('blocks/:userId')
   @HttpCode(204)
   @ApiNoContentResponse()

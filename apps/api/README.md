@@ -9,7 +9,7 @@ docker compose -f infra/docker/dev/compose.yml up -d   # from the repo root
 cp .env.example .env
 pnpm --filter @app/api db:migrate # apply apps/api/drizzle/*.sql
 pnpm --filter @app/api db:seed    # games, ranks and modes (safe to re-run)
-pnpm --filter @app/api dev        # http://localhost:3300, Swagger UI at /docs
+pnpm --filter @app/api dev        # http://localhost:3300, docs at /docs, spec at /openapi.json
 pnpm --filter @app/api test       # unit tests, src/**/*.spec.ts
 pnpm --filter @app/api test:e2e   # HTTP + database tests against gn_test (created for you)
 pnpm --filter @app/api spec       # rewrite packages/api-spec/openapi.json

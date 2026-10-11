@@ -54,6 +54,7 @@ export class ListingsController {
     return { lookingNow: await this.listings.lookingNow(user) };
   }
 
+  /** One listing, as the signed-in player sees it. */
   @Get(':id')
   @ApiOkResponse({ type: ListingDto })
   get(@CurrentUser() user: User, @Param('id', listingId) id: string): Promise<ListingDto> {
