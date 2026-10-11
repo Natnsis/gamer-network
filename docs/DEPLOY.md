@@ -1,7 +1,90 @@
 # Deploying
 
-One VPS running Docker Compose with Caddy for HTTPS (ADR-0004).
-Everything is in `infra/docker/prod/`:
+Production runs on Render (ADR-0008), described by `render.yaml` at the
+repo root. `main` deploys itself: merging a release is the deploy.
+
+| Render service | What it does                                                          |
+| -------------- | --------------------------------------------------------------------- |
+| `gn-api`       | NestJS API. Pre-deploy runs the migrations and seeds the game catalog |
+| `gn-web`       | Share pages, privacy policy, App Links                                |
+| `gn-admin`     | Moderation dashboard                                                  |
+| `gn-db`        | Postgres 17, private, daily backups by Render                         |
+
+`gn-web` and `gn-admin` call the API over Render's private network.
+Avatars go straight from the phone to Cloudflare R2 (API.md "Images").
+
+## 1. One-time setup on Render
+
+1. **Cloudflare R2.** A `gn-media` bucket with public access (the
+   `r2.dev` URL or a custom domain); that URL is `MEDIA_PUBLIC_URL`. Add
+   a CORS rule allowing `PUT` from any origin with the `Content-Type`
+   header, so phones can upload. Create an API token with Object Read &
+   Write on the bucket.
+2. **Keys.** Production refuses to start without them (the API exits
+   with e.g. `RESEND_API_KEY is not set.`):
+   - `RESEND_API_KEY`, and `MAIL_FROM` on a domain verified in Resend.
+   - `FIREBASE_SERVICE_ACCOUNT`: Firebase console → Project settings →
+     Service accounts → Generate new private key, then
+     `base64 -w0 key.json`.
+   - The R2 settings above: `S3_ENDPOINT`
+     (`https://<account id>.r2.cloudflarestorage.com`),
+     `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `MEDIA_PUBLIC_URL`.
+   - `GOOGLE_CLIENT_IDS` is optional: leave it empty and only email +
+     password sign-in works.
+3. **Blueprint.** Render dashboard → New → Blueprint → connect this
+   GitHub repo, branch `main`. Render reads `render.yaml` and asks for
+   every value marked `sync: false`. The URLs come from the service
+   names, so fill them in as:
+   - `PUBLIC_WEB_URL` (on `gn-api` and `gn-web`): `https://gn-web.onrender.com`
+   - `WEB_ORIGINS`: `https://gn-web.onrender.com,https://gn-admin.onrender.com`
+
+   If Render gives a service a different `onrender.com` name, or you add
+   your own domains later (service → Settings → Custom Domains), change
+   these two to match and redeploy.
+
+4. **Check it.**
+
+   ```sh
+   curl https://gn-api.onrender.com/health        # {"status":"ok","database":"ok"}
+   curl https://gn-api.onrender.com/openapi.json  # the contract, for the app
+   ```
+
+5. **Admin account.** Sign up in the app (or with `POST /v1/auth/signup`),
+   then in `gn-api` → Shell: `node dist/db/grant-admin.js <email>`, and
+   sign in at `https://gn-admin.onrender.com`.
+6. **Uptime check.** Add `https://gn-api.onrender.com/health` to a free
+   monitor (UptimeRobot, Better Stack) with email alerts. It answers 503
+   when the database is down.
+
+## 2. Updating
+
+Release `dev` → `main` (`release/YYYY-MM-DD`). Render builds the three
+images, runs the pre-deploy step and switches over only if `/health`
+answers. A failed migration stops the deploy and the old version keeps
+running. Roll back from the service's Events page ("Rollback").
+
+**Check the new code is really live**, not just that the server
+answers: the deploy in the service's Events page should show the merge
+commit, and a route the release added or changed should answer the new
+way.
+
+## 3. Backups and restore
+
+Render backs up `gn-db` daily (paid plans) and restores from the
+database's Recovery page. For a copy to keep elsewhere:
+
+```sh
+pg_dump -Fc "<external connection string>" -f gn-$(date +%Y%m%d).dump
+```
+
+(The database has no outside access by default: add your IP under
+`gn-db` → Networking first, and remove it after.)
+
+## Running the production images yourself
+
+`infra/docker/prod/` is the same three images plus Caddy, Postgres and
+backups as one Compose stack: the way to try production locally, and
+the way back to a VPS (ADR-0004).
 
 | Service          | What it does                                                        |
 | ---------------- | ------------------------------------------------------------------- |
@@ -18,7 +101,7 @@ Avatars don't live on the server: they go straight from the phone to
 Cloudflare R2 (API.md "Images"). `web` calls the API over the internal
 network (`http://api:3300`), so share pages don't depend on DNS.
 
-## 1. One-time setup
+### VPS setup
 
 1. **Server.** A small Linux VPS (2 GB RAM, 20 GB disk) with Docker
    Engine and the Compose plugin. Open ports 22, 80 and 443 only.
@@ -48,7 +131,7 @@ network (`http://api:3300`), so share pages don't depend on DNS.
    Generate `POSTGRES_PASSWORD` with `openssl rand -hex 32`. `.env` is
    gitignored; keep a copy somewhere safe.
 
-## 2. First start
+### First start
 
 ```sh
 cd infra/docker/prod
@@ -71,7 +154,7 @@ docker compose run --rm api node dist/db/grant-admin.js <email>
 (UptimeRobot, Better Stack) with email alerts. It answers 503 when the
 database is down.
 
-## 3. Updating
+### Updating
 
 ```sh
 cd infra/docker/prod
@@ -87,7 +170,7 @@ answers: `docker compose ps` should show containers created just now,
 and a route the release added or changed should answer the new way
 (`/health` answering says nothing about which version is running).
 
-## 4. Backups and restore
+### Backups and restore
 
 `backup` writes `backups/gn-YYYYMMDD-HHMM.dump` when it starts and every
 24 h after, and keeps 14 days. `backup-offsite` copies new dumps to the
@@ -107,7 +190,7 @@ docker compose start api web admin
 A dump from the bucket: download it first (R2 dashboard, or
 `aws s3 cp` with the backup token).
 
-## 5. Useful commands
+### Useful commands
 
 ```sh
 docker compose logs -f api web caddy
@@ -115,7 +198,7 @@ docker compose exec postgres psql -U gn gn
 docker compose run --rm migrate      # re-run migrations by hand
 ```
 
-## Try it on a laptop
+### Try it on a laptop
 
 The production stack runs locally too, which is how it was tested.
 

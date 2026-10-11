@@ -2,7 +2,11 @@
 // page scripts never see it. /api/v1/* adds it to calls to the API.
 export const SESSION_COOKIE = 'gn_admin';
 
-export const apiUrl = () => (process.env.API_URL ?? 'http://localhost:3300').replace(/\/+$/, '');
+// Render's private network gives "host:port" with no scheme.
+export const apiUrl = () => {
+  const url = (process.env.API_URL ?? 'http://localhost:3300').replace(/\/+$/, '');
+  return /^https?:\/\//.test(url) ? url : `http://${url}`;
+};
 
 export const cookieOptions = {
   httpOnly: true,
