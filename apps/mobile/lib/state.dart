@@ -266,6 +266,9 @@ class AppState extends ChangeNotifier {
   /// A call is running; buttons that start one wait for it.
   bool busy = false;
 
+  /// Launch is slow (the server is waking up), or it failed to reach it.
+  bool waking = false, offline = false;
+
   // App and catalog
   AppConfigResponse? config;
   Catalog catalog = Catalog();
@@ -411,21 +414,35 @@ class AppState extends ChangeNotifier {
 
   /// Launch: version check, catalog, then the saved session if any.
   Future<void> boot() async {
-    final cfg = await call(
-      () async => (await api.app.appConfigGet()).data!,
-      quiet: true,
+    update(() {
+      offline = false;
+      screen = Screen.splash;
+    });
+    final slow = Timer(
+      const Duration(seconds: 3),
+      () => update(() => waking = true),
     );
-    if (cfg == null) {
-      update(() => screen = Screen.landing);
-      return toast(ApiError.network.message);
+    try {
+      final cfg = await call(
+        () async => (await api.app.appConfigGet()).data!,
+        quiet: true,
+      );
+      if (cfg == null) return update(() => offline = true);
+      config = cfg;
+      await loadCatalog();
+      await api.restore();
+      if (!api.signedIn) return go(Screen.landing);
+      final m = await call(
+        () async => (await api.me.meGet()).data!,
+        quiet: true,
+      );
+      if (m != null) return _signedIn(m);
+      // A 401 already cleared the session; anything else keeps it for a retry.
+      api.signedIn ? update(() => offline = true) : go(Screen.landing);
+    } finally {
+      slow.cancel();
+      update(() => waking = false);
     }
-    config = cfg;
-    await loadCatalog();
-    await api.restore();
-    if (!api.signedIn) return go(Screen.landing);
-    final m = await call(() async => (await api.me.meGet()).data!, quiet: true);
-    if (m == null) return go(Screen.landing);
-    _signedIn(m);
   }
 
   Future<void> loadCatalog() async {

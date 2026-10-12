@@ -3,14 +3,17 @@ import 'dart:io' as io;
 
 import 'package:api_client/api_client.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-/// Where the API lives. The emulator reaches the host's localhost at
-/// 10.0.2.2 (docs/API.md "Base URL"); builds for a phone or production pass
-/// `--dart-define=API_URL=https://…`.
+/// Where the API lives. Release builds talk to production; debug builds to
+/// the host's local API, which the emulator reaches at 10.0.2.2
+/// (docs/API.md "Base URL"). `--dart-define=API_URL=…` overrides either.
 const apiUrl = String.fromEnvironment(
   'API_URL',
-  defaultValue: 'http://10.0.2.2:3300',
+  defaultValue: kReleaseMode
+      ? 'https://gn-api-c763.onrender.com'
+      : 'http://10.0.2.2:3300',
 );
 
 /// A failed call, in the API's error shape (docs/API.md "Errors"): branch on
@@ -112,8 +115,10 @@ class Api {
     final dio = Dio(
       BaseOptions(
         baseUrl: baseUrl,
-        connectTimeout: const Duration(seconds: 15),
-        receiveTimeout: const Duration(seconds: 30),
+        // Render's free tier sleeps when idle and takes up to a minute to
+        // answer the first request after that.
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 75),
       ),
     );
     if (adapter != null) dio.httpClientAdapter = adapter;

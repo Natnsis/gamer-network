@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -118,6 +119,40 @@ void main() {
     await tapText(t, 'Next');
     await tapText(t, 'Start');
     expect(find.text('Welcome back.'), findsOneWidget);
+    await done(t);
+  });
+
+  testWidgets('a sleeping server: the splash says so, then the app opens', (
+    t,
+  ) async {
+    final api = FakeApi();
+    final config = api.routes['GET /v1/app/config'];
+    api.routes['GET /v1/app/config'] = (RequestOptions o) =>
+        Future.delayed(const Duration(seconds: 6), () => config);
+    t.view.physicalSize = const Size(390, 844);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    await t.pumpWidget(RallyApp(api: fakeApi(api)));
+    await t.pump(const Duration(seconds: 4));
+    expect(find.textContaining('Waking up rally'), findsOneWidget);
+    await t.pump(const Duration(seconds: 3));
+    await settle(t);
+    expect(find.textContaining('Waking up rally'), findsNothing);
+    expect(find.text('Who are you as a gamer?'), findsOneWidget);
+    await done(t);
+  });
+
+  testWidgets('no connection at launch: Try again keeps the session', (
+    t,
+  ) async {
+    final api = FakeApi();
+    final config = api.routes['GET /v1/app/config'];
+    api.unreachable('GET /v1/app/config');
+    await pumpApp(t, api, token: 't-1');
+    expect(find.text('Can’t reach rally right now.'), findsOneWidget);
+    api.routes['GET /v1/app/config'] = config;
+    await tapText(t, 'Try again');
+    expect(find.text('YOUR STATUS'), findsOneWidget);
     await done(t);
   });
 

@@ -1252,21 +1252,58 @@ class _VisToggle extends StatelessWidget {
   }
 }
 
-/// While the app checks its version and saved session.
+/// While the app checks its version and saved session. The server may be
+/// asleep (it says so after a few seconds), or out of reach (Try again).
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
   @override
-  Widget build(BuildContext context) => const Center(
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        RallyLogo(size: 96),
-        SizedBox(height: 18),
-        Wordmark(size: 30, logo: false),
-      ],
-    ),
-  );
+  Widget build(BuildContext context) {
+    final s = context.app;
+    final t = context.rt;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const RallyLogo(size: 96),
+            const SizedBox(height: 18),
+            const Wordmark(size: 30, logo: false),
+            const SizedBox(height: 24),
+            if (s.offline) ...[
+              Text(
+                'Can’t reach rally right now.',
+                textAlign: TextAlign.center,
+                style: t.body(16, w: w700),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Check your connection and try again.',
+                textAlign: TextAlign.center,
+                style: t.body(14, c: t.muted),
+              ),
+              const SizedBox(height: 16),
+              Pill(
+                'Try again',
+                onTap: s.boot,
+                height: 44,
+                padH: 20,
+                size: 15,
+                weight: w700,
+                shadow: 3,
+              ),
+            ] else if (s.waking)
+              Text(
+                'Waking up rally… this can take up to a minute.',
+                textAlign: TextAlign.center,
+                style: t.body(14, c: t.muted),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 /// Below `minSupportedVersion` (or any 426): nothing else works.

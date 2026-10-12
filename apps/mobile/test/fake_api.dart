@@ -315,6 +315,10 @@ class FakeApi implements HttpClientAdapter {
         'error': {'code': code, 'message': message},
       });
 
+  /// [route] fails as if the phone were offline.
+  void unreachable(String route) => routes[route] = (RequestOptions o) =>
+      throw DioException.connectionError(requestOptions: o, reason: 'offline');
+
   Iterable<Object?> bodiesOf(String route) =>
       sent.where((r) => '${r.method} ${r.path}' == route).map((r) => r.body);
 
@@ -335,6 +339,7 @@ class FakeApi implements HttpClientAdapter {
     }
     var r = routes[key];
     if (r is Object? Function(RequestOptions)) r = r(o);
+    if (r is Future) r = await r;
     if (r is _Err) return _json(r.status, r.body);
     if (r == null) return ResponseBody.fromString('', 204);
     return _json(
