@@ -36,8 +36,11 @@ Avatars go straight from the phone to Cloudflare R2 (API.md "Images").
    header, so phones can upload. Create an API token with Object Read &
    Write on the bucket.
 2. **Keys.** Production refuses to start without them (the API exits
-   with e.g. `RESEND_API_KEY is not set.`):
-   - `RESEND_API_KEY`, and `MAIL_FROM` on a domain verified in Resend.
+   with e.g. `FIREBASE_SERVICE_ACCOUNT is required in production.`):
+   - Email, one of: `BREVO_API_KEY` (Brevo → SMTP & API → API keys),
+     with `MAIL_FROM` on a sender verified in Brevo (a single address
+     like a Gmail works, no domain needed); or `RESEND_API_KEY`, with
+     `MAIL_FROM` on a domain verified in Resend. Leave the other empty.
    - `FIREBASE_SERVICE_ACCOUNT`: Firebase console → Project settings →
      Service accounts → Generate new private key, then
      `base64 -w0 key.json`.
@@ -147,7 +150,10 @@ network (`http://api:3300`), so share pages don't depend on DNS.
      this bucket.
 4. **Keys.** Production refuses to start without them (the API exits
    with e.g. `RESEND_API_KEY is required in production.`):
-   - `RESEND_API_KEY`, and `MAIL_FROM` on a domain verified in Resend.
+   - Email, one of: `BREVO_API_KEY` (Brevo → SMTP & API → API keys),
+     with `MAIL_FROM` on a sender verified in Brevo (a single address
+     like a Gmail works, no domain needed); or `RESEND_API_KEY`, with
+     `MAIL_FROM` on a domain verified in Resend. Leave the other empty.
    - `FIREBASE_SERVICE_ACCOUNT`: Firebase console → Project settings →
      Service accounts → Generate new private key, then
      `base64 -w0 key.json`.
