@@ -100,5 +100,6 @@ pnpm --filter @app/api admin:grant you@example.com --revoke  # undo
 Everything in `.env.example` has a dev default except these, which must
 be set in production (the API refuses to start without the `S3_*` and
 URL ones): `GOOGLE_CLIENT_IDS`, `RESEND_API_KEY` + `MAIL_FROM`,
-`FIREBASE_SERVICE_ACCOUNT`, `S3_*`, `MEDIA_PUBLIC_URL`, `PUBLIC_WEB_URL`,
-`WEB_ORIGINS`.
+`FIREBASE_SERVICE_ACCOUNT`, `S3_*`, `PUBLIC_WEB_URL`, `WEB_ORIGINS`.
+`MEDIA_PUBLIC_URL` is optional: empty means a private bucket and signed
+avatar URLs (ADR-0009).
