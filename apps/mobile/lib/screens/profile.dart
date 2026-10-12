@@ -187,12 +187,13 @@ class ProfileScreen extends StatelessWidget {
   }
 
   List<Widget> _connections(AppState s, RallyTheme t) {
-    if (s.connections.isEmpty)
+    if (s.connections.isEmpty) {
       return const [
         EmptyNote(
           'No connections yet. Find Players is the fastest way to make one.',
         ),
       ];
+    }
     return [
       RowList(
         children: [

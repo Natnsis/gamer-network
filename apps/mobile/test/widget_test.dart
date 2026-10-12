@@ -379,8 +379,9 @@ void main() {
           s.openPlayer('dave.exe');
         } else {
           s.go(screen, () {
-            if (screen == Screen.editProfile)
+            if (screen == Screen.editProfile) {
               s.edit = ProfileDraft.from(s.me!, s.catalog);
+            }
             if (screen == Screen.ranks) s.onboard.games = ['codm', 'mc'];
           });
         }

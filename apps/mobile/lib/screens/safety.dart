@@ -203,8 +203,9 @@ Future<void> showReportDialog(
       },
     ),
   );
-  if (send == true && reason != null)
+  if (send == true && reason != null) {
     await s.report(userId, reason!, listingId: listingId, details: details);
+  }
 }
 
 Future<void> confirmDeleteAccount(BuildContext context) async {

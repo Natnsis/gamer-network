@@ -1146,8 +1146,9 @@ class TagChips extends StatelessWidget {
           tagLabel[x]!,
           selected.contains(x),
           () {
-            if (!selected.contains(x) && selected.length >= 6)
+            if (!selected.contains(x) && selected.length >= 6) {
               return context.app.toast('Pick up to 6');
+            }
             onToggle(x);
           },
           height: 36,

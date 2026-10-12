@@ -433,8 +433,9 @@ class AppState extends ChangeNotifier {
       () async => (await api.games.gamesList()).data!,
       quiet: true,
     );
-    if (list != null)
+    if (list != null) {
       update(() => catalog = Catalog([for (final g in list) Game.fromDto(g)]));
+    }
   }
 
   void _signedIn(MeDto m) {
@@ -557,10 +558,11 @@ class AppState extends ChangeNotifier {
   });
 
   void goSearch() => update(() {
-    if (screen != Screen.search)
+    if (screen != Screen.search) {
       searchPrev = screen == Screen.profile && viewing != null
           ? Screen.home
           : screen;
+    }
     screen = Screen.search;
     q = '';
     found = [];
@@ -593,8 +595,9 @@ class AppState extends ChangeNotifier {
     await api.setToken(r.token);
     loginPass = '';
     _signedIn(r.user);
-    if (r.user.onboardedAt != null)
+    if (r.user.onboardedAt != null) {
       toast('Welcome back, ${r.user.displayName}');
+    }
   }
 
   /// Sign-up step 1: creates the account, then asks for the emailed code.
@@ -634,8 +637,9 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> verifyEmail() async {
-    if (code.trim().length < 6)
+    if (code.trim().length < 6) {
       return toast('Enter the 6-digit code from the email');
+    }
     final m = await _busy(
       () async => (await api.auth.authVerifyEmail(
         codeBody: CodeBody((b) => b..code = code.trim()),
@@ -671,10 +675,12 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> resetPassword() async {
-    if (resetCode.trim().length < 6)
+    if (resetCode.trim().length < 6) {
       return toast('Enter the 6-digit code from the email');
-    if (newPassword.length < 8)
+    }
+    if (newPassword.length < 8) {
       return toast('Password needs at least 8 characters');
+    }
     final r = await _busy(
       () async => (await api.auth.authResetPassword(
         userAgent: api.userAgent,
@@ -929,8 +935,9 @@ class AppState extends ChangeNotifier {
 
   void openListingSheet() {
     final launch = launchGames;
-    if (launch.isEmpty)
+    if (launch.isEmpty) {
       return toast('Find Players opens soon. No games are live yet.');
+    }
     final mine = [
       for (final g in me?.games ?? BuiltList<UserGameDto>()) g.game?.id,
     ].whereType<String>().toSet();
@@ -1250,17 +1257,20 @@ class AppState extends ChangeNotifier {
     final d = edit;
     final m0 = me;
     if (d == null || m0 == null) return;
-    if (d.name.trim().isEmpty || d.handle.trim().isEmpty)
+    if (d.name.trim().isEmpty || d.handle.trim().isEmpty) {
       return toast('Name and username can’t be empty');
+    }
     if (d.games.isEmpty) return toast('Keep at least one game');
     final m = await _busy(() async {
       final patch = UpdateMeBody((b) {
         if (d.name.trim() != m0.displayName) b.displayName = d.name.trim();
-        if (d.handle.trim().toLowerCase() != m0.username)
+        if (d.handle.trim().toLowerCase() != m0.username) {
           b.username = d.handle.trim().toLowerCase();
+        }
         if (d.bio.trim() != (m0.bio ?? '')) b.bio = d.bio.trim();
-        if (d.city.trim().isNotEmpty && d.city.trim() != m0.city)
+        if (d.city.trim().isNotEmpty && d.city.trim() != m0.city) {
           b.city = d.city.trim();
+        }
       });
       await api.me.meUpdate(updateMeBody: patch);
       await _saveGamer(d);
@@ -1280,8 +1290,9 @@ class AppState extends ChangeNotifier {
   void closeEditProfile({bool force = false}) {
     final d = edit;
     final m = me;
-    if (!force && d != null && m != null && d.differs(m))
+    if (!force && d != null && m != null && d.differs(m)) {
       return update(() => confirmDiscard = true);
+    }
     go(Screen.profile, () {
       edit = null;
       confirmDiscard = false;

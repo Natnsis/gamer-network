@@ -328,10 +328,11 @@ class FakeApi implements HttpClientAdapter {
     Object? body = o.data;
     if (body is String && body.isNotEmpty) body = jsonDecode(body);
     sent.add((method: o.method, path: o.uri.path, body: body));
-    if (!routes.containsKey(key))
+    if (!routes.containsKey(key)) {
       return _json(404, {
         'error': {'code': 'not_found', 'message': 'No fake for $key'},
       });
+    }
     var r = routes[key];
     if (r is Object? Function(RequestOptions)) r = r(o);
     if (r is _Err) return _json(r.status, r.body);

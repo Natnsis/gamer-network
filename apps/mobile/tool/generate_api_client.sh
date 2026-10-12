@@ -18,5 +18,5 @@ npx -y @openapitools/openapi-generator-cli@2.41.0 generate \
   >/dev/null
 rm -f openapitools.json "$out/.travis.yml" "$out/git_push.sh"
 
-(cd "$out" && dart pub get >/dev/null && dart run build_runner build --delete-conflicting-outputs >/dev/null)
+(cd "$out" && dart pub get >/dev/null && dart run build_runner build --delete-conflicting-outputs >/dev/null && dart format lib >/dev/null)
 echo "Generated $out from the spec."
