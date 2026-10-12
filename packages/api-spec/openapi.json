@@ -3886,7 +3886,18 @@
       },
       "ResetResponse": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/MeDto"
+          }
+        },
+        "required": [
+          "token",
+          "user"
+        ]
       },
       "ChangePasswordBody": {
         "type": "object",
@@ -3930,7 +3941,30 @@
       },
       "AppConfigResponse": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "minSupportedVersion": {
+            "type": "string",
+            "description": "Apps below this version must update (they get 426 everywhere else)."
+          },
+          "latestVersion": {
+            "type": "string",
+            "description": "Newest released version, for a gentle \"Update available\"."
+          },
+          "launchCity": {
+            "type": "string",
+            "description": "The one city the beta runs in."
+          },
+          "groupsComingSoon": {
+            "type": "boolean",
+            "description": "Show the Groups tab as \"coming soon\" with a waitlist."
+          }
+        },
+        "required": [
+          "minSupportedVersion",
+          "latestVersion",
+          "launchCity",
+          "groupsComingSoon"
+        ]
       },
       "RankDto": {
         "type": "object",
@@ -4311,7 +4345,22 @@
       },
       "UsernameAvailability": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "available": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Why it isn't: \"taken\" or \"invalid\".",
+            "enum": [
+              "taken",
+              "invalid"
+            ]
+          }
+        },
+        "required": [
+          "available"
+        ]
       },
       "ProfileDto": {
         "type": "object",
