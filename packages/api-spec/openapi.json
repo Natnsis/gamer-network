@@ -4625,7 +4625,7 @@
               6,
               24
             ],
-            "type": "number"
+            "type": "integer"
           },
           "status": {
             "description": "expired as soon as expiresAt passes, even before the expiry job runs.",
@@ -4782,7 +4782,7 @@
               6,
               24
             ],
-            "type": "number"
+            "type": "integer"
           },
           "gameId": {
             "type": "string",
