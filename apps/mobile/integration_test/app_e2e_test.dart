@@ -15,6 +15,12 @@ const helper = String.fromEnvironment(
 );
 final _helper = Dio(BaseOptions(baseUrl: helper));
 
+/// Against a deployed API there is no helper: the player is made and
+/// verified beforehand (their email here, password123, not onboarded), and
+/// the steps that need an emailed code or a due check-in are skipped.
+const remoteEmail = String.fromEnvironment('E2E_EMAIL');
+const remote = remoteEmail != '';
+
 /// Every toast the app showed, for failure messages.
 final toasts = <String>[];
 
@@ -124,8 +130,8 @@ void main() {
     'a new player: sign up, go live, post, connect, play, check in, stay safe',
     (t) async {
       final stamp = DateTime.now().millisecondsSinceEpoch.toRadixString(36);
-      final email = 'e2e.$stamp@rally.test';
-      final handle = 'e2e_$stamp';
+      final email = remote ? remoteEmail : 'e2e.$stamp@rally.test';
+      final handle = remote ? 'gn_mobile' : 'e2e_$stamp';
       const name = 'Tester';
 
       await t.pumpWidget(
@@ -142,18 +148,22 @@ void main() {
 
       // ---- sign up and confirm the email ----
       await tapText(t, 'Log in');
-      await tapText(t, 'Create a profile');
-      await fill(t, 'you@example.com', email);
-      await fill(t, 'Kaleb', name);
-      await fill(t, 'kaleb.gg', handle);
-      await fill(t, 'At least 8 characters', 'password123');
-      await tapText(t, 'Continue');
-      await see(t, 'Check your');
-      await fill(t, '123456', '000000');
-      await tapText(t, 'Confirm email');
-      await see(t, 'That code didn');
-      await fill(t, '123456', await codeFor(email));
-      await tapText(t, 'Confirm email');
+      if (remote) {
+        await login(t, email);
+      } else {
+        await tapText(t, 'Create a profile');
+        await fill(t, 'you@example.com', email);
+        await fill(t, 'Kaleb', name);
+        await fill(t, 'kaleb.gg', handle);
+        await fill(t, 'At least 8 characters', 'password123');
+        await tapText(t, 'Continue');
+        await see(t, 'Check your');
+        await fill(t, '123456', '000000');
+        await tapText(t, 'Confirm email');
+        await see(t, 'That code didn');
+        await fill(t, '123456', await codeFor(email));
+        await tapText(t, 'Confirm email');
+      }
       await see(t, 'What do you play?');
 
       // ---- onboarding: games, ranks, platforms and IDs ----
@@ -294,12 +304,14 @@ void main() {
       await see(t, 'PLAY INVITE');
       await tapText(t, 'I’m in');
       await see(t, 'You’re on');
-      await makeCheckInsDue(email);
-      await tapText(t, 'PLAYERS');
-      await nav(t, 'HOME');
-      await see(t, 'Did you play with Dave?');
-      await tapText(t, 'Yes, we played');
-      await see(t, 'GG — glad you played');
+      if (!remote) {
+        await makeCheckInsDue(email);
+        await tapText(t, 'PLAYERS');
+        await nav(t, 'HOME');
+        await see(t, 'Did you play with Dave?');
+        await tapText(t, 'Yes, we played');
+        await see(t, 'GG — glad you played');
+      }
 
       // ---- close the listing ----
       await tapText(t, 'Close listing');
@@ -327,22 +339,26 @@ void main() {
 
       // ---- forgot password ----
       await tapOn(t, find.byType(BackBtn));
-      await tapText(t, 'Log out');
-      await tapText(t, 'Log in');
-      await tapText(t, 'Forgot password?');
-      await fill(t, 'Email', email);
-      await tapText(t, 'Email me a code');
-      await see(t, 'New password.');
-      await fill(t, '6-digit code', await codeFor(email));
-      await fill(t, 'New password, 8+ characters', 'password456');
-      await tapText(t, 'Set password and log in');
-      await see(t, 'Password changed');
-      await see(t, 'YOUR STATUS');
+      var password = 'password123';
+      if (!remote) {
+        await tapText(t, 'Log out');
+        await tapText(t, 'Log in');
+        await tapText(t, 'Forgot password?');
+        await fill(t, 'Email', email);
+        await tapText(t, 'Email me a code');
+        await see(t, 'New password.');
+        await fill(t, '6-digit code', await codeFor(email));
+        await fill(t, 'New password, 8+ characters', 'password456');
+        await tapText(t, 'Set password and log in');
+        await see(t, 'Password changed');
+        await see(t, 'YOUR STATUS');
+        password = 'password456';
+      }
 
       // ---- delete the account ----
       await nav(t, 'YOU');
       await tapText(t, 'Delete account');
-      await fill(t, 'Your password', 'password456');
+      await fill(t, 'Your password', password);
       await tapText(t, 'Delete');
       await see(t, 'Account deleted');
     },
