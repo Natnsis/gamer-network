@@ -21,7 +21,7 @@ Closed on 2026-10-15 (`feature/api-missing-fields`):
 - `PATCH /v1/listings/{id}` (`voice`, `style`, `playWhen`, `note`): fix a
   live listing without closing it, so its requests and link stay.
 
-The apps don't use these yet; wiring them is the next PR.
+`apps/mobile`, `apps/web` and `apps/admin` use all of them.
 
 ## Data gaps (seed, not API)
 

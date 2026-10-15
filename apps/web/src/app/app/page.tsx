@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import {
   api,
   type CheckIn,
@@ -22,6 +23,7 @@ import {
   statusLook,
   toneFor,
 } from './_lib/data';
+import { EditListingSheet } from './_lib/sheets';
 import { useApp, useLoad, useNow } from './_lib/store';
 import { Avatar, Card, Chip, Digits, Dot, Icon, Label, Pill, Wordmark, toneColor } from './_lib/ui';
 
@@ -56,6 +58,7 @@ export default function Home() {
       sent: sent.items,
     };
   }, [version]);
+  const [editing, setEditing] = useState(false);
   if (!me) return null;
 
   const answerCheckIn = async (c: CheckIn, answer: 'played' | 'not_yet' | 'no') => {
@@ -97,6 +100,13 @@ export default function Home() {
 
   return (
     <>
+      {editing && data?.listing && (
+        <EditListingSheet
+          l={data.listing}
+          onClose={() => setEditing(false)}
+          onSaved={(l) => setData({ ...data, listing: l })}
+        />
+      )}
       <TopBar unread={unread} />
       <div className="gap rl-pad" style={{ gap: 14, paddingTop: 14 }}>
         {!me.emailVerified && (
@@ -173,7 +183,7 @@ export default function Home() {
         ))}
         <StatusCard me={me} onStatus={setStatus} />
         {data?.listing ? (
-          <MyListing l={data.listing} onClose={closeListing} />
+          <MyListing l={data.listing} onClose={closeListing} onEdit={() => setEditing(true)} />
         ) : (
           <Card dark pad={18} radius={26}>
             <div className="gap" style={{ gap: 12 }}>
@@ -384,7 +394,15 @@ function StatusCard({
   );
 }
 
-function MyListing({ l, onClose }: { l: Listing; onClose: () => void }) {
+function MyListing({
+  l,
+  onClose,
+  onEdit,
+}: {
+  l: Listing;
+  onClose: () => void;
+  onEdit: () => void;
+}) {
   const now = useNow();
   const { toast, busy } = useApp();
   const share = async () => {
@@ -435,6 +453,9 @@ function MyListing({ l, onClose }: { l: Listing; onClose: () => void }) {
         <div className="row" style={{ gap: 8 }}>
           <Pill h={42} size={14} bold expand onClick={share}>
             <Icon name="share" size={16} /> Share link
+          </Pill>
+          <Pill h={42} padH={16} size={14} onClick={onEdit} disabled={busy}>
+            Edit
           </Pill>
           <Pill h={42} size={14} expand look="clear" onClick={onClose} disabled={busy}>
             Close listing
