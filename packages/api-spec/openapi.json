@@ -3667,6 +3667,13 @@
             "format": "date-time",
             "type": "string"
           },
+          "waitlist": {
+            "description": "Waitlist topics joined (POST /v1/waitlist), e.g. \"groups\".",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "bio": {
             "type": "string",
             "nullable": true
@@ -3698,6 +3705,11 @@
             "type": "string",
             "nullable": true,
             "description": "Set when relationship is incoming_request, to accept from the profile."
+          },
+          "outgoingRequestId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Set when relationship is outgoing_request, to withdraw from the profile."
           },
           "id": {
             "type": "string"
@@ -3750,12 +3762,14 @@
           "country",
           "onboardedAt",
           "createdAt",
+          "waitlist",
           "bio",
           "statusUntil",
           "games",
           "gamingIds",
           "stats",
           "incomingRequestId",
+          "outgoingRequestId",
           "id",
           "username",
           "displayName",
@@ -3791,7 +3805,14 @@
         "properties": {
           "email": {
             "type": "string",
+            "description": "Required unless `username` is sent.",
             "format": "email"
+          },
+          "username": {
+            "type": "string",
+            "description": "Instead of `email`.",
+            "minLength": 1,
+            "maxLength": 30
           },
           "password": {
             "type": "string",
@@ -3800,7 +3821,6 @@
           }
         },
         "required": [
-          "email",
           "password"
         ]
       },
@@ -4437,6 +4457,11 @@
             "nullable": true,
             "description": "Set when relationship is incoming_request, to accept from the profile."
           },
+          "outgoingRequestId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Set when relationship is outgoing_request, to withdraw from the profile."
+          },
           "id": {
             "type": "string"
           },
@@ -4487,6 +4512,7 @@
           "gamingIds",
           "stats",
           "incomingRequestId",
+          "outgoingRequestId",
           "id",
           "username",
           "displayName",
@@ -5632,6 +5658,22 @@
           "isLaunch"
         ]
       },
+      "WaitlistCountDto": {
+        "type": "object",
+        "properties": {
+          "topic": {
+            "type": "string",
+            "description": "\"groups\" for the Groups \"Notify me\" button."
+          },
+          "count": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "topic",
+          "count"
+        ]
+      },
       "MetricsDto": {
         "type": "object",
         "properties": {
@@ -5661,6 +5703,13 @@
           "weeklyActive": {
             "type": "number",
             "description": "People active in the 7 days before `to`."
+          },
+          "waitlist": {
+            "description": "Everyone who tapped \"Notify me\", per topic, all time; most wanted first.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WaitlistCountDto"
+            }
           }
         },
         "required": [
@@ -5670,7 +5719,8 @@
           "listingsWithRequest",
           "listingsPlayed",
           "playedRate",
-          "weeklyActive"
+          "weeklyActive",
+          "waitlist"
         ]
       },
       "ErrorBody": {
