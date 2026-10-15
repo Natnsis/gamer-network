@@ -18,12 +18,10 @@ Closed on 2026-10-15 (`feature/api-missing-fields`):
 - `waitlist` counts on `GET /v1/admin/metrics`: the admin Overview shows
   which groups people want (PRD: the waitlist "tells us which groups to
   launch").
+- `PATCH /v1/listings/{id}` (`voice`, `style`, `playWhen`, `note`): fix a
+  live listing without closing it, so its requests and link stay.
 
-Still open, on purpose:
-
-| What the app needs           | What happens now                                    | Suggested change                                                                 |
-| ---------------------------- | --------------------------------------------------- | -------------------------------------------------------------------------------- |
-| Fix a typo in a live listing | Close it and post again (resets requests and link). | `PATCH /v1/listings/{id}` for `note`, `voice`, `playWhen`. Not in the prototype. |
+The apps don't use these yet; wiring them is the next PR.
 
 ## Data gaps (seed, not API)
 

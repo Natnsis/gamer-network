@@ -1591,6 +1591,60 @@
         "tags": [
           "listings"
         ]
+      },
+      "patch": {
+        "operationId": "listingsUpdate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateListingBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListingDto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Any error: see docs/API.md for the codes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Fix a live listing: voice, style, when, note. Owner only; 409 listing_not_live once it has ended.",
+        "tags": [
+          "listings"
+        ]
       }
     },
     "/v1/listings/{id}/close": {
@@ -4856,6 +4910,39 @@
         "required": [
           "lookingNow"
         ]
+      },
+      "UpdateListingBody": {
+        "type": "object",
+        "properties": {
+          "voice": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Voice"
+              }
+            ]
+          },
+          "style": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PlayStyle"
+              }
+            ]
+          },
+          "playWhen": {
+            "description": "Moves the start and the end, keeping durationHours, counted from now.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PlayWhen"
+              }
+            ]
+          },
+          "note": {
+            "type": "string",
+            "nullable": true,
+            "description": "null or \"\" clears it.",
+            "maxLength": 140
+          }
+        }
       },
       "MyListingDto": {
         "type": "object",
