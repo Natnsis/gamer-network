@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api, query, type Metrics } from '../api';
-import { ago, RANGES, REASON, SEV_ORDER, severity } from '../data';
+import { ago, RANGES, REASON, SEV_ORDER, severity, subject } from '../data';
 import type { Admin } from '../state';
 import {
   ACC,
@@ -217,7 +217,7 @@ export function Overview({ admin }: { admin: Admin }) {
                     {REASON[r.reason]} · @{r.target.username}
                   </div>
                   <div style={{ fontSize: 12, color: MUT }}>
-                    {r.listingId ? 'Listing' : 'Profile'} · {ago(r.createdAt)}
+                    {subject(r).kind} · {ago(r.createdAt)}
                   </div>
                 </div>
               </div>
