@@ -7,7 +7,8 @@ moderation, and the tests that prove it works. The mobile app, the web
 PWA and the admin integrate once it exists.
 
 **Status:** proposed with [ADR-0012](decisions/0012-feed-and-groups-in-the-mvp.md).
-Nothing here is built. Until ADR-0012 is accepted, ADR-0001 still holds.
+Phase 1 (section 10) is built and hidden behind `feedEnabled`; the rest
+is not. Until ADR-0012 is accepted, ADR-0001 still holds.
 
 **Source of truth for the screens:** the prototype at
 `Natnsis/rally` (`lib/screens/home.dart`, `compose.dart`, `groups.dart`,
@@ -190,8 +191,9 @@ Tables (all ids UUID v7, all with `created_at`):
   - `text`: 1–2000, trimmed;
   - `audience` post_audience, default `everyone`;
   - `status` content_status, default `live`;
-  - `gg_count` and `comment_count` (int, default 0, kept in step in the
-    same transaction);
+  - no stored counts: GG and comment counts are counted from `post_gg`
+    and `comments` when read, leaving out banned and deleted people, so
+    bans, unbans, blocks and deletions never leave them wrong (phase 1);
   - `removed_at`, `removed_by` (both null until removed).
 - **Indexes:**
   - `(status, id DESC)` for the feed;
@@ -232,8 +234,8 @@ application_status, `decided_at` null. Unique `(post_id, user_id)`.
     reply to a reply attaches to the same parent);
   - `text`: 1–500;
   - `status` content_status;
-  - `gg_count`.
-- **Index:** `(post_id, id)`.
+  - `removed_at`, `removed_by`.
+- **Index:** `(post_id, id)`, and `(parent_id, id)` for replies.
 
 **`comment_gg`**: PK `(comment_id, user_id)`.
 
