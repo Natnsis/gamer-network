@@ -15,7 +15,7 @@ import { inviteWhenLabel, partyLabel, platformLabel, platforms, playWhenLabel } 
 import { useApp } from './store';
 import { BigButton, Chip, Field, Label, Sheet } from './ui';
 
-function Group<T extends string | number>({
+export function Group<T extends string | number>({
   label,
   options,
   value,
@@ -49,7 +49,7 @@ function Group<T extends string | number>({
   );
 }
 
-function SheetTitle({ children, onClose }: { children: ReactNode; onClose: () => void }) {
+export function SheetTitle({ children, onClose }: { children: ReactNode; onClose: () => void }) {
   return (
     <div className="row" style={{ justifyContent: 'space-between', marginBottom: 10 }}>
       <div style={{ fontSize: 24, fontWeight: 800, letterSpacing: -0.8 }}>{children}</div>

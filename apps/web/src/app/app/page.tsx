@@ -23,6 +23,7 @@ import {
   statusLook,
   toneFor,
 } from './_lib/data';
+import { Feed } from './_lib/feed';
 import { EditListingSheet } from './_lib/sheets';
 import { useApp, useLoad, useNow } from './_lib/store';
 import { Avatar, Card, Chip, Digits, Dot, Icon, Label, Pill, Wordmark, toneColor } from './_lib/ui';
@@ -34,10 +35,25 @@ type HomeData = {
   sent: PlayInvite[];
 };
 
-/** Home in the MVP (docs/API.md screen map): no feed. */
+/**
+ * Home. With config.feedEnabled (ADR-0012): what needs an answer, your live
+ * listing, then the feed. Without it, the MVP Home: status and listings.
+ */
 export default function Home() {
-  const { me, run, setMe, setInvites, invites, unread, setUnread, version, toast, setSheet } =
-    useApp();
+  const {
+    me,
+    run,
+    setMe,
+    setInvites,
+    invites,
+    unread,
+    setUnread,
+    version,
+    toast,
+    setSheet,
+    config,
+  } = useApp();
+  const feedOn = !!config?.feedEnabled;
   const { data, setData, reload } = useLoad<HomeData>(async () => {
     const [m, stats, mine, checks, inc, sent, n] = await Promise.all([
       api<Me>('me'),
@@ -181,8 +197,12 @@ export default function Home() {
             </div>
           </Card>
         ))}
-        <StatusCard me={me} onStatus={setStatus} />
-        {data?.listing ? (
+        {!feedOn && <StatusCard me={me} onStatus={setStatus} />}
+        {feedOn ? (
+          data?.listing && (
+            <MyListing l={data.listing} onClose={closeListing} onEdit={() => setEditing(true)} />
+          )
+        ) : data?.listing ? (
           <MyListing l={data.listing} onClose={closeListing} onEdit={() => setEditing(true)} />
         ) : (
           <Card dark pad={18} radius={26}>
@@ -216,14 +236,18 @@ export default function Home() {
           </span>
           <span style={{ fontSize: 14, fontWeight: 700, textDecoration: 'underline' }}>Find →</span>
         </Link>
-        <button
-          type="button"
-          className="u muted"
-          style={{ fontSize: 13, alignSelf: 'center', textDecoration: 'none' }}
-          onClick={reload}
-        >
-          Refresh
-        </button>
+        {feedOn ? (
+          <Feed />
+        ) : (
+          <button
+            type="button"
+            className="u muted"
+            style={{ fontSize: 13, alignSelf: 'center', textDecoration: 'none' }}
+            onClick={reload}
+          >
+            Refresh
+          </button>
+        )}
       </div>
     </>
   );
