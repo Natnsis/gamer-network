@@ -23,6 +23,13 @@ Closed on 2026-10-15 (`feature/api-missing-fields`):
 
 `apps/mobile`, `apps/web` and `apps/admin` use all of them.
 
+## The prototype's feed and groups
+
+Not gaps in the MVP API but a scope change: the Home feed, posts,
+comments, groups and Moments from the prototype.
+[FEED_AND_GROUPS_API.md](FEED_AND_GROUPS_API.md) lists everything those
+screens need, proposed with ADR-0012.
+
 ## Data gaps (seed, not API)
 
 - **Roles are empty for every game.** `GameDto.roles` and
