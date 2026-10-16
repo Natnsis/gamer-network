@@ -28,7 +28,7 @@ Closed on 2026-10-15 (`feature/api-missing-fields`):
 Not gaps in the MVP API but a scope change: the Home feed, posts,
 comments, groups and Moments from the prototype.
 [FEED_AND_GROUPS_API.md](FEED_AND_GROUPS_API.md) lists everything those
-screens need, proposed with ADR-0012.
+screens need, accepted with ADR-0012.
 
 ## Data gaps (seed, not API)
 

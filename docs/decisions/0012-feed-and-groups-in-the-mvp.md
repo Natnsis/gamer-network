@@ -1,7 +1,7 @@
 # ADR-0012: The prototype's feed, groups and Moments join the MVP
 
-**Status:** Proposed (2026-10-16). Would amend ADR-0001 (the MVP grows
-past Find Players) and the PRD's "Out" list (home feed, posts, comments,
+**Status:** Accepted (2026-10-16). Amends ADR-0001 (the MVP grows past
+Find Players) and the PRD's "Out" list (home feed, posts, comments,
 clips, groups).
 
 ## Context
@@ -30,8 +30,17 @@ five-phase build order.
   true. Today's screens stay as the fallback.
 - Moderation (reports, admin removal, blocks, bans) ships with posting,
   as ADR-0005 requires.
-- The questions in section 11 of that file are answered in this ADR's
-  review before phase 1 starts.
+- Section 11 of that file is answered as it suggests:
+  - "For you" is newest first, not ranked;
+  - the feed covers everyone, not only the viewer's city;
+  - no editing posts (delete and post again);
+  - any player with a verified email can create groups (3 a day), and
+    admins can remove them;
+  - any member can add events, and group admins can delete them;
+  - no profanity filter: we rely on reports;
+  - listings don't appear as feed cards, for now;
+  - video waits for a check of B2 egress and Render's limits before
+    phase 2, with clips capped at 60 s and 50 MB.
 
 ## Alternatives considered
 

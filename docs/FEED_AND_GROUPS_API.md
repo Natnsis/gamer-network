@@ -6,9 +6,9 @@ tables, the endpoints with their rules and errors, notifications,
 moderation, and the tests that prove it works. The mobile app, the web
 PWA and the admin integrate once it exists.
 
-**Status:** proposed with [ADR-0012](decisions/0012-feed-and-groups-in-the-mvp.md).
+**Status:** accepted with [ADR-0012](decisions/0012-feed-and-groups-in-the-mvp.md).
 Phase 1 (section 10) is built and hidden behind `feedEnabled`; the rest
-is not. Until ADR-0012 is accepted, ADR-0001 still holds.
+is not.
 
 **Source of truth for the screens:** the prototype at
 `Natnsis/rally` (`lib/screens/home.dart`, `compose.dart`, `groups.dart`,
