@@ -332,6 +332,6 @@ others from `post_gg`. Written under the post's row lock, never pushed.
 ## Not in the MVP
 
 Clips ("Game Moments"), groups, game pages, chat, rank verification.
-Posts, comments and GG are phase 1 of ADR-0012 (proposed): built, and
+Posts, comments and GG are phase 1 of ADR-0012: built, and
 hidden in the apps until `FEED_ENABLED`. Media, polls, recruitment and
 groups follow [FEED_AND_GROUPS_API.md](FEED_AND_GROUPS_API.md).
